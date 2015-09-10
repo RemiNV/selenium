@@ -115,6 +115,7 @@
     <Compile Include="PhantomJS\PhantomJSDriverService.cs" />
     <Compile Include="PhantomJS\PhantomJSOptions.cs" />
     <Compile Include="PhantomJS\PhantomJSWebElement.cs" />
+    <Compile Include="WebDriverCredentials.cs" />
     <Compile Include="Remote\ICommandServer.cs" />
     <Compile Include="Remote\JsonConverters\DesiredCapabilitiesJsonConverter.cs" />
     <Compile Include="Remote\JsonConverters\PlatformJsonConverter.cs" />

@@ -55,6 +55,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnableToSetCookieException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverCredentials;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.HasInputDevices;
@@ -78,6 +79,7 @@ import org.w3c.dom.NodeList;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
+import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.InteractivePage;
 import com.gargoylesoftware.htmlunit.Page;
@@ -248,6 +250,8 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
     setJavascriptEnabled(capabilities.isJavascriptEnabled());
 
     setProxySettings(Proxy.extractFrom(capabilities));
+    
+    setCredentialsSettings(WebDriverCredentials.extractFrom(capabilities));
   }
 
   public HtmlUnitDriver(Capabilities desiredCapabilities, Capabilities requiredCapabilities) {
@@ -426,6 +430,32 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
         }
         break;
     }
+  }
+  
+  /**
+   * Set authentication credentials for WebClient using WebDriverCredentials
+   * 
+   * @param credentials The credentials
+   */
+  public void setCredentialsSettings(WebDriverCredentials credentials) {
+	  if(credentials == null || credentials.getAuthType() == WebDriverCredentials.AuthType.UNSPECIFIED) {
+		  return;
+	  }
+	  
+	  DefaultCredentialsProvider creds = new DefaultCredentialsProvider();
+	  switch(credentials.getAuthType()) {
+	  case NORMAL:
+		  creds.addCredentials(credentials.getUsername(), credentials.getPassword(), credentials.getHost(),
+				  credentials.getPort(), credentials.getRealm());
+		  break;
+		  
+	  case NTLM:
+		  creds.addNTLMCredentials(credentials.getUsername(), credentials.getPassword(), credentials.getHost(), 
+				  credentials.getPort(), credentials.getNtlmWorkstation(), credentials.getNtlmDomain());
+		  break;
+	  }
+	  
+	  getWebClient().setCredentialsProvider(creds);
   }
 
   /**
